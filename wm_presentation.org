@@ -1,0 +1,128 @@
+#+TITLE: Why your window manager doesn't matter
+#+REVEAL_PLUGINS: (notes search zoom)
+#+REVEAL_MARGIN: 0.1
+#+REVEAL_TRANS: cube
+#+REVEAL_THEME: white
+#+OPTIONS: reveal_single_file:t
+
+
+* But i like my Window Manager! :(
+[[./pikachu.png]]
+** Super*
+
+#+ATTR_REVEAL: :frag (appear)
++ * with Linux
++ * with X11
++ * with EWMH
+
+* Why do people use tiling WMs?
++ Increased screen usage
++ Less resource usage
++ Keyboard-driven
++ Lots of customizability
+
+** You're doing it wrong
+[[./bush_doing_it_wrong_1.jpg]]
+** Why?
++ 90% Only one application is visible
++ 8% Two applications are tiled
+** Anti-patterns:
++ Tiling is the default => Programs are started and moved to a different workspace afterwards
++ People still use the equivalent of alt+tab
+** Context Switches
+[[./context.png]]
+* Solution
+i3
+#+BEGIN_SRC shell
+workspace_layout tabbed
+#+END_SRC
+bspwm
+#+BEGIN_SRC shell
+bspc desktop --layout monocle
+#+END_SRC
+** Applaus, nach Haus'
+#+BEGIN_SRC shell
+jumpapp firefox
+#+END_SRC
+Starts Program, if it does not run. If it is running, focus it
+** useful options
+#+BEGIN_SRC
+  -f -- force COMMAND to launch if process found but no windows found
+  -R -- bring the application to the current workspace when raising
+  -C -- center cursor when raising application
+#+END_SRC
+
+** But I'm a minimalist!
+#+BEGIN_SRC shell
+wmctrl -a -x thunderbird || thunderbird
+#+END_SRC
+
+* Fancy shit
+[[./fancy_shit.jpg]]
+** SXHKD - Keyboard shortcuts, independent of your WM
+#+BEGIN_SRC
+super + t
+    wmctrl -a -x thunderbird || thunderbird
+#+END_SRC
+** xkeysnail -- Context-dependent keyboard shortcuts
+#+BEGIN_SRC
+define_keymap(re.compile("Brave-browser|Firefox|Google-chrome"), {
+    K("C-k"): [K("Shift-end"), K("delete")],
+    K("C-Super-k"): K("C-k"),
+    K("C-m"): K("enter"),
+}, "Firefox and Chrome")
+#+END_SRC
+** Don't use a task-/statusbar!
+Use Notifications instead!
+#+BEGIN_SRC shell
+#!/bin/sh
+
+date | xargs -d '\n' notify-send
+#+END_SRC
+#+BEGIN_SRC bash
+#!/usr/bin/env bash
+
+while true
+do
+	POWER_PERCENT=$(cat /sys/class/power_supply/BAT0/capacity)
+	if [ ! -z "$POWER_PERCENT" ] && [ "$POWER_PERCENT" -lt 20 ]
+	then
+		if type beep >/dev/null 2>&1
+		then
+			beep
+		fi
+		notify-send "Power below $POWER_PERCENT%" "Connect charging device!"
+	fi
+	sleep 300
+done
+#+END_SRC
+** KeyNav - You don't have a mouse, but have to click something
+==> See demo
+** Don't get interrupted anymore! - ewmh ignore focus
+bspwm
+#+BEGIN_SRC
+bspc config ignore_ewmh_focus true
+#+END_SRC
+i3
+#+BEGIN_SRC
+no_focus [window_role="pop-up"]
+#+END_SRC
+
+* Ideas
+#+ATTR_REVEAL: :frag (appear)
+ Tile two Applications manually
+#+ATTR_REVEAL: :frag (appear)
++ Herbstlufwm can do this
++ Maybe mark these applications and send them to a workspace?
+ 
+* Teaser
+[[./menu1.jpg]]
+* Links
+https://github.com/mkropat/jumpapp
+https://linux.die.net/man/1/wmctrl
+https://github.com/baskerville/sxhkd
+https://github.com/mooz/xkeysnail
+https://github.com/jordansissel/keynav
+https://gitlab.com/oer/org-re-reveal
+* Sources
+https://www.youtube.com/watch?v=AK2UKUfsV3g
